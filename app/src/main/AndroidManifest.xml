@@ -11,6 +11,9 @@
         android:theme="@style/Theme.UsbDisplay">
         <activity
             android:name=".DisplayActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

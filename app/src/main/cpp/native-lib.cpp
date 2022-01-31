@@ -13,14 +13,6 @@
 #define QOI_IMPLEMENTATION
 #include "qoi.h"
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_github_fflexo_usb_1display_DisplayActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
-
 extern "C" JNIEXPORT void JNICALL
 Java_com_github_fflexo_usb_1display_DisplayView_renderDisplay(JNIEnv * env, jclass clazz, jobject bitmap, jint fd, jlong size, jlong offset) {
     AndroidBitmapInfo  info;
@@ -55,7 +47,7 @@ Java_com_github_fflexo_usb_1display_DisplayView_renderDisplay(JNIEnv * env, jcla
     // TODO: info and desc should match perfectly or else soemthing went rather wrong and will only get worse!
     if(decompressed) {
         LOGI("decompressed %u x %u ok!", desc.width, desc.height);
-        memcpy(pixels, decompressed, info.width*info.stride);
+        memcpy(pixels, decompressed, info.width*info.height*4);
         free(decompressed);
     }
     else {
