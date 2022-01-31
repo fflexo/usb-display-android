@@ -28,6 +28,7 @@ public class DisplayView extends View {
         }
         canvas.drawBitmap(bitmap, 0, 0, null);
         Log.d("usb-display", "Frame draw " + fd);
+        //invalidate(); or postInvalidate();
     }
 
     private static native void renderDisplay(Bitmap bitmap, int fd, long size, long offset);
