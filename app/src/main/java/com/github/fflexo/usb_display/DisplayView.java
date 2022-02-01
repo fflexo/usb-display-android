@@ -11,6 +11,12 @@ import java.io.IOException;
 
 public class DisplayView extends View {
     private final Bitmap bitmap;
+    private FrameSource source;
+
+    void setFrameSource(FrameSource source) {
+        this.source = source;
+    }
+
     public DisplayView(DisplayActivity displayActivity, int w, int h) {
         super(displayActivity);
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -18,6 +24,10 @@ public class DisplayView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (source != null) {
+            byte[] newFrame = source.takePendingRawFrame();
+            
+        }
         AssetFileDescriptor afd = this.getResources().openRawResourceFd(R.raw.usb);
         int fd = afd.getParcelFileDescriptor().getFd();
         renderDisplay(bitmap, fd, afd.getLength(), afd.getStartOffset());

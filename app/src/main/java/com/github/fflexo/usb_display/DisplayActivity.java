@@ -1,14 +1,22 @@
 package com.github.fflexo.usb_display;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
-public class DisplayActivity extends /*AppCompatActivity*/ Activity {
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+public class DisplayActivity extends Activity {
 
     // Used to load the 'usb_display' library on application startup.
     static {
@@ -36,6 +44,14 @@ public class DisplayActivity extends /*AppCompatActivity*/ Activity {
         Display display = getWindowManager().getDefaultDisplay();
         Point displaySize = new Point();
         display.getSize(displaySize);
-        setContentView(new DisplayView(this, /*displaySize.x*/ 2560, /*displaySize.y*/ 1440));
+
+        DisplayView view = new DisplayView(this, /*displaySize.x*/ 2560, /*displaySize.y*/ 1440);
+        FrameSource source = new UsbWorker(getIntent(), (UsbManager)getSystemService(Context.USB_SERVICE), view);
+        view.setFrameSource(source);
+
+        setContentView(view);
+
+
+
     }
 }
