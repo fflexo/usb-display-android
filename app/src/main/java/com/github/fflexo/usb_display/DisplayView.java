@@ -26,20 +26,14 @@ public class DisplayView extends View {
     protected void onDraw(Canvas canvas) {
         if (source != null) {
             byte[] newFrame = source.takePendingRawFrame();
-            
+            renderDisplay(bitmap, newFrame);
         }
-        AssetFileDescriptor afd = this.getResources().openRawResourceFd(R.raw.usb);
-        int fd = afd.getParcelFileDescriptor().getFd();
-        renderDisplay(bitmap, fd, afd.getLength(), afd.getStartOffset());
-        try {
-            afd.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
         canvas.drawBitmap(bitmap, 0, 0, null);
-        Log.d("usb-display", "Frame draw " + fd);
+        Log.d("usb-display", "Frame draw " + source);
         //invalidate(); or postInvalidate();
     }
 
-    private static native void renderDisplay(Bitmap bitmap, int fd, long size, long offset);
+    private static native void renderDisplay(Bitmap bitmap, byte[] rawFrame);
 }
