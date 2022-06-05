@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.View;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 public class UsbWorker implements Runnable, FrameSource {
     private final UsbManager manager;
@@ -33,7 +35,11 @@ public class UsbWorker implements Runnable, FrameSource {
 
         if (usbAccessory != null) {
             worker = new Thread(null, this, "AccessoryThread");
-            worker.run();
+            worker.start();
+            Log.i("usb-worker", "Started USB thread");
+        }
+        else {
+            Log.w("usb-worker", "Usb worker created, but not in accessory mode correctly!");
         }
 
     }
@@ -57,15 +63,26 @@ public class UsbWorker implements Runnable, FrameSource {
     public void run() {
         DataInputStream dis = new DataInputStream(mInput);
         try {
+            // Send EDID, protocol start etc.
+            //mOutput.write("Hello world\n".getBytes());
+
             // TODO: don't keep working too hard if we're backgrounded
             while (true) {
+                mOutput.write("Ready for frame\n".getBytes());
+                Log.i("usb-worker","sent frame request");
                 // N.B. This is where our USB stream's endianness gets defined
-                int frameSize = dis.readInt();
+                byte[] frame = null;
+                try {
+                    int frameSize = dis.readInt();
+                    Log.i("usb-worker", "frame header: " + frameSize);
 
-                // TODO: recycle frame byte buffers if performance benchmarking suggests it's worthwhile
-                byte[] frame = new byte[frameSize];
-                dis.readFully(frame, 0, frame.length);
-
+                    // TODO: recycle frame byte buffers if performance benchmarking suggests it's worthwhile
+                    frame = new byte[frameSize];
+                    dis.readFully(frame, 0, frame.length);
+                }
+                catch (InterruptedIOException ioe) {
+                    Log.w("usb-worker", "Interrupted IO exception");
+                }
                 // Next job is to decode frame. It's a little unclear right now where's the right
                 // right place to actually do the bitmap decode, this thread or another thread.
                 // For now we expect the main thread to do that, but longer term we should
@@ -82,18 +99,22 @@ public class UsbWorker implements Runnable, FrameSource {
         catch (IOException e) {
             // TODO: recovery?
             Log.e("usb-display", "Exception during read");
+            e.printStackTrace();
         }
+        Log.e("usb-worker", "usb thread exiting");
     }
 
     private FileInputStream mInput;
     private FileOutputStream mOutput;
+    private ParcelFileDescriptor pfd;
+    private FileDescriptor fd;
 
     private void openAccessory() {
         //UsbAccessory[] accessoryList = manager.getAccessoryList();
         //ParcelFileDescriptor pfd = manager.openAccessory(accessoryList[0]);
-        FileDescriptor fd;
+        //FileDescriptor fd;
         try  {
-            ParcelFileDescriptor pfd = manager.openAccessory(usbAccessory);
+            pfd = manager.openAccessory(usbAccessory);
             fd = pfd.getFileDescriptor();
             mInput = new FileInputStream(fd);
             mOutput = new FileOutputStream(fd);

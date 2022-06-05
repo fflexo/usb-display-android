@@ -52,7 +52,7 @@ public class DisplayActivity extends Activity {
 
         view.setFrameSource(source);
 
-        view.setFrameSource(defaultSource);
+        //view.setFrameSource(defaultSource);
 
         setContentView(view);
 
