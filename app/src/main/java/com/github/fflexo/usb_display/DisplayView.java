@@ -45,7 +45,7 @@ public class DisplayView extends View {
         Log.d("display-view", "Frame draw " + source);
         //invalidate();// or postInvalidate();
         //postInvalidateDelayed(20);
-        invalidate();
+        //invalidate();
     }
 
     private static native void renderDisplay(Bitmap bitmap, byte[] rawFrame);
