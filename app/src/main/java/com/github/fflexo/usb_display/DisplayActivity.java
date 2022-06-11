@@ -47,7 +47,7 @@ public class DisplayActivity extends Activity {
         Point displaySize = new Point();
         display.getSize(displaySize);
 
-        DisplayView view = new DisplayView(this, /*displaySize.x*/ 2560, /*displaySize.y*/ 1440);
+        DisplayView view = new DisplayView(this, displaySize.x, displaySize.y);
         FrameSource source = new UsbWorker(getIntent(), (UsbManager)getSystemService(Context.USB_SERVICE), view);
 
         view.setFrameSource(source);

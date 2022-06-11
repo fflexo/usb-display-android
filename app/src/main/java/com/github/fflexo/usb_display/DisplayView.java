@@ -19,7 +19,8 @@ public class DisplayView extends View {
 
     public DisplayView(DisplayActivity displayActivity, int w, int h) {
         super(displayActivity);
-        bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        // Temporary hack until EDID done:
+        bitmap = Bitmap.createBitmap(2560,1440, Bitmap.Config.ARGB_8888);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class DisplayView extends View {
             Log.w("usb-display-view", "source is NULL");
         }
 
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        canvas.drawBitmap(bitmap, null, canvas.getClipBounds(), null);
     }
 
     private static native void renderDisplay(Bitmap bitmap, byte[] rawFrame);
