@@ -20,10 +20,6 @@ public class DisplayView extends View {
     public DisplayView(DisplayActivity displayActivity, int w, int h) {
         super(displayActivity);
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        Log.i("usb-display-view", "Will not draw: " + willNotDraw());
-        //setWillNotDraw(false);
-        //setWillNotCacheDrawing(false);
-        //cache
     }
 
     @Override
@@ -33,19 +29,16 @@ public class DisplayView extends View {
             byte[] newFrame = source.takePendingRawFrame();
             if (newFrame == null) {
                 Log.w("usb-display-view", "Got NULL frame");
-                //postInvalidateDelayed(20);
-                //invalidate();
-                return;
             }
-            renderDisplay(bitmap, newFrame);
+            else {
+                renderDisplay(bitmap, newFrame);
+            }
+        }
+        else {
+            Log.w("usb-display-view", "source is NULL");
         }
 
-
         canvas.drawBitmap(bitmap, 0, 0, null);
-        Log.d("display-view", "Frame draw " + source);
-        //invalidate();// or postInvalidate();
-        //postInvalidateDelayed(20);
-        //invalidate();
     }
 
     private static native void renderDisplay(Bitmap bitmap, byte[] rawFrame);
